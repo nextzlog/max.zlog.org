@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>次のロガーが、来る。 — 近日公開</title>
+<meta name="description" content="コンテストロガーが、変わる。無線部開発班より、近日公開。">
+<meta property="og:title" content="次のロガーが、来る。">
+<meta property="og:description" content="コンテストロガーが、変わる。近日公開。">
+<meta property="og:type" content="website">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;--fg:#f5f5f7;--muted:#86868b;--soft:#a1a1a6;--line:#2c2c2e;
+  --a1:#ffc35a;--a2:#ff7a3d;
+  --sans:"Inter","Noto Sans JP",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --W:860px;--H:520px;--D:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:clip}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.6}
+a{color:inherit;text-decoration:none}
+.grad{background:linear-gradient(100deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nw{white-space:nowrap;display:inline-block}
+
+.top{position:sticky;top:0;z-index:50;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;color:var(--soft);letter-spacing:.08em}
+
+.scene{position:relative;height:600vh}
+.stage{position:sticky;top:48px;height:calc(100vh - 48px);height:calc(100svh - 48px);overflow:hidden;background:radial-gradient(60% 50% at 50% 55%,rgba(255,150,60,.10),transparent 70%)}
+
+.hero{position:absolute;left:0;right:0;top:9vh;text-align:center;padding:0 20px;z-index:3;will-change:opacity,transform}
+.eyebrow{font-size:clamp(15px,1.6vw,19px);font-weight:600;color:var(--soft);letter-spacing:.02em}
+.h1{font-size:clamp(44px,9vw,116px);font-weight:800;line-height:1.04;letter-spacing:-.04em;margin-top:8px}
+.sub{font-size:clamp(17px,1.9vw,23px);color:var(--soft);margin-top:16px;font-weight:500}
+.morse{margin-top:22px;font-family:var(--mono);font-size:13px;color:#5a4a33;letter-spacing:.2em}
+.morse span{transition:color .2s,text-shadow .2s}
+.morse span.on{color:var(--a1);text-shadow:0 0 10px rgba(255,195,90,.8)}
+
+/* silhouette device */
+.dev-wrap{position:absolute;left:50%;top:45%;width:0;height:0;perspective:2400px;z-index:2}
+.dev-scale{position:absolute;left:0;top:0;transform-origin:0 0;transform-style:preserve-3d}
+.device{position:absolute;left:calc(var(--W) / -2);top:calc(var(--H) / -2);width:var(--W);height:var(--H);transform-style:preserve-3d;will-change:transform}
+.face{position:absolute;inset:0;border-radius:16px;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:linear-gradient(160deg,#141414,#070707 60%,#0d0d0d);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.12)}
+.face.front{transform:translateZ(calc(var(--D) / 2))}
+.face.back{transform:rotateY(180deg) translateZ(calc(var(--D) / 2))}
+.face .bar{height:38px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
+.face .blk{position:absolute;left:40px;right:40px;top:78px;bottom:56px;display:grid;grid-template-rows:repeat(4,22px) 1fr;gap:14px;filter:blur(7px);opacity:.55}
+.face .blk i{display:block;border-radius:6px;background:linear-gradient(90deg,rgba(255,195,90,.18),rgba(255,255,255,.05) 60%,transparent)}
+.face .blk i:nth-child(2){width:80%}.face .blk i:nth-child(3){width:90%}.face .blk i:nth-child(4){width:60%}
+.face .blk i:last-child{background:linear-gradient(0deg,rgba(255,150,60,.22),transparent);width:100%}
+.face .mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:120px;font-weight:800;letter-spacing:-.06em;color:transparent;-webkit-text-stroke:1px rgba(255,195,90,.35)}
+.face .sweep{position:absolute;inset:-40%;background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.07) 50%,transparent 58%);animation:sweep 5s ease-in-out infinite}
+@keyframes sweep{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}
+.rim{position:absolute;inset:0;border-radius:16px;pointer-events:none;box-shadow:0 0 0 1px rgba(255,180,90,.25),0 0 60px rgba(255,150,60,.18)}
+.side{position:absolute;background:linear-gradient(90deg,#1a1a1a,#2a2a2a 50%,#141414)}
+.side.l,.side.r{width:var(--D);height:calc(var(--H) - 32px);top:16px;left:calc(50% - var(--D) / 2)}
+.side.l{transform:rotateY(-90deg) translateZ(calc(var(--W) / 2 - 1px))}
+.side.r{transform:rotateY(90deg) translateZ(calc(var(--W) / 2 - 1px))}
+.side.t,.side.b{height:var(--D);width:calc(var(--W) - 32px);left:16px;top:calc(50% - var(--D) / 2);background:linear-gradient(#2a2a2a,#141414)}
+.side.t{transform:rotateX(90deg) translateZ(calc(var(--H) / 2 - 1px))}
+.side.b{transform:rotateX(-90deg) translateZ(calc(var(--H) / 2 - 1px))}
+.floor{position:absolute;left:-330px;top:300px;width:660px;height:60px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,160,70,.25),transparent);filter:blur(10px)}
+
+.caps{position:absolute;left:0;right:0;bottom:4vh;height:130px;text-align:center;z-index:3;pointer-events:none;padding:0 20px}
+.cap{position:absolute;left:0;right:0;font-size:clamp(28px,4.8vw,58px);font-weight:800;letter-spacing:-.03em;opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+.cap.on{opacity:1;transform:none}
+.cap small{display:block;font-size:clamp(14px,1.5vw,18px);font-weight:500;color:var(--soft);letter-spacing:0;margin-top:8px}
+
+/* coming soon */
+.soon{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 22px;background:radial-gradient(700px 380px at 50% 45%,rgba(255,150,60,.16),transparent)}
+.soon .k{font-size:clamp(16px,1.7vw,20px);font-weight:600;color:var(--soft)}
+.soon .big{font-size:clamp(56px,12vw,160px);font-weight:800;letter-spacing:-.05em;line-height:1;margin-top:10px}
+.soon .jp{font-size:clamp(22px,3vw,34px);font-weight:700;margin-top:18px;letter-spacing:-.01em}
+.soon p.l{font-size:clamp(16px,1.6vw,19px);color:var(--soft);margin-top:22px;max-width:34em}
+.links{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:40px}
+.pill{display:inline-block;padding:12px 24px;border-radius:980px;font-size:15px;font-weight:600}
+.pill.p{background:linear-gradient(100deg,var(--a1),var(--a2));color:#1a0d00}
+.pill.o{border:1px solid #3a3a3c}
+.pill.o:hover{border-color:#777}
+
+footer{border-top:1px solid var(--line);padding:28px 22px 46px;font-size:12px;color:var(--muted);text-align:center}
+footer a:hover{color:var(--fg)}
+
+.fx{opacity:0;transform:translateY(36px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1)}
+.fx.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.fx{opacity:1;transform:none}*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="top">COMING SOON</div>
+
+<section class="scene" id="scene">
+  <div class="stage">
+    <div class="hero" id="hero">
+      <div class="eyebrow">無線部開発班より</div>
+      <h1 class="h1"><span class="nw">次のロガーが、</span><br><span class="nw grad">来る。</span></h1>
+      <p class="sub">コンテストロガーが、変わる。</p>
+      <div class="morse" id="morse" aria-hidden="true"></div>
+    </div>
+
+    <div class="dev-wrap" aria-hidden="true">
+      <div class="dev-scale" id="devScale">
+        <div class="floor" id="floor"></div>
+        <div class="device" id="device">
+          <div class="face front"><div class="bar"></div><div class="blk"><i></i><i></i><i></i><i></i><i></i></div><div class="sweep"></div><div class="rim"></div></div>
+          <div class="face back"><div class="mark">?</div><div class="sweep"></div><div class="rim"></div></div>
+          <div class="side l"></div><div class="side r"></div><div class="side t"></div><div class="side b"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caps" id="caps">
+      <p class="cap" data-k="1">Windows だけじゃない。</p>
+      <p class="cap" data-k="2">耳だけじゃない。</p>
+      <p class="cap" data-k="3">シャックだけじゃない。</p>
+      <p class="cap" data-k="4"><span class="nw">いつもの手癖は、</span><span class="nw grad">そのまま。</span><small>手に馴染んだ操作は、何も変えずに。</small></p>
+    </div>
+  </div>
+</section>
+
+<section class="soon">
+  <div class="k fx">無線部開発班</div>
+  <div class="big grad fx">Coming soon.</div>
+  <div class="jp fx">近日公開。</div>
+  <p class="l fx">次のコンテストを、まったく新しいロガーで。<br>準備が整いしだい、ここでお知らせします。</p>
+  <div class="links fx">
+    <a class="pill p" href="https://x.com/nextzlog">最新情報は X で</a>
+    <a class="pill o" href="https://nextzlog.dev">無線部開発班について</a>
+  </div>
+</section>
+
+<footer>© <a href="https://nextzlog.dev">無線部開発班</a></footer>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* morse: ZLOG */
+(function(){const M={Z:'--..',L:'.-..',O:'---',G:'--.'},msg='ZLOG',box=$('#morse'),sp=[];
+  for(const ch of msg){const s=document.createElement('span');s.textContent=M[ch]+'  ';box.appendChild(s);sp.push([s,M[ch]])}
+  if(reduce)return;
+  (async()=>{const w=ms=>new Promise(r=>setTimeout(r,ms));
+    while(true){for(const [s,c] of sp){s.classList.add('on');await w(130*c.length+160);s.classList.remove('on')}await w(1800)}})();
+})();
+
+/* device fit */
+const devScale=$('#devScale');
+function fit(){const k=Math.min(1,(innerWidth-36)/860,(innerHeight*.5)/520);devScale.dataset.k=k}
+fit();addEventListener('resize',fit);
+
+const scene=$('#scene'),device=$('#device'),floor=$('#floor'),hero=$('#hero'),caps=$('#caps');
+function prog(){const r=scene.getBoundingClientRect();return clamp((48-r.top)/(scene.offsetHeight-(innerHeight-48)))}
+function frame(){
+  const p=prog(),k=+devScale.dataset.k;
+  const t1=ease(clamp(p/.2));             // rise out of the dark
+  const t2=ease(clamp((p-.22)/.66));      // slow turn
+  const rx=58*(1-t1)+7*t1, ry=-20+380*t2;
+  const sc=(.62+.38*t1);
+  const ty=(1-t1)*innerHeight*.16 + t1*innerHeight*.03;
+  devScale.style.transform=`translateY(${ty}px) scale(${k*sc})`;
+  devScale.style.opacity=.15+.85*t1;
+  device.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+  floor.style.transform=`scaleX(${.45+.55*Math.abs(Math.cos(ry*Math.PI/180))})`;
+  hero.style.opacity=1-clamp((p-.04)/.12);
+  hero.style.transform=`translateY(${-60*clamp((p-.04)/.12)}px)`;
+  let key='';
+  if(p>.24&&p<.42) key='1'; else if(p>=.42&&p<.6) key='2'; else if(p>=.6&&p<.78) key='3'; else if(p>=.8) key='4';
+  caps.querySelectorAll('.cap').forEach(c=>c.classList.toggle('on',c.dataset.k===key));
+}
+let tick=false;
+addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(()=>{tick=false;frame()})}},{passive:true});
+addEventListener('resize',()=>requestAnimationFrame(frame));
+frame();
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.2});
+$$('.fx').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
